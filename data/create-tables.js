@@ -8,6 +8,13 @@ async function run() {
 
   try {
 
+    /*
+      preview: obj.images.preview.mp4
+      gif: obj.images.original.url
+      giphy_id: obj.id
+      url: obj.bitly_url
+    */
+
     // run a query to create tables
     await client.query(` 
       CREATE TABLE users (
@@ -19,8 +26,9 @@ async function run() {
     
       CREATE TABLE favorites (
         id SERIAL PRIMARY KEY NOT NULL,
-        name VARCHAR(512) NOT NULL,
-        type VARCHAR(128) NOT NULL,
+        preview VARCHAR(1024) NOT NULL, 
+        gif VARCHAR(1024) NOT NULL,
+        giphy_id VARCHAR(256) NOT NULL,
         url VARCHAR(1024) NOT NULL,
         user_id INTEGER NOT NULL REFERENCES users(id)
       );
