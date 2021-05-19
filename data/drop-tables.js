@@ -6,19 +6,19 @@ run();
 async function run() {
 
   try {
-    
+
     await client.query(`
       DROP TABLE IF EXISTS users CASCADE;
-      DROP TABLE IF EXISTS cats;
+      DROP TABLE IF EXISTS favorites;
     `);
 
     console.log('drop tables complete');
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
   }
   finally {
     client.end();
   }
-    
+
 }
