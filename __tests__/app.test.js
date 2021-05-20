@@ -15,6 +15,7 @@ describe('API Routes', () => {
 
   describe('/api/me/gifs', () => {
     let user;
+    let user2;
 
     beforeAll(async () => {
       execSync('npm run recreate-tables');
@@ -26,16 +27,22 @@ describe('API Routes', () => {
           email: 'lover@gif.com',
           password: 'sekrit'
         });
+      
+      const response2 = await request 
+        .post('/api/auth/signup')
+        .send({
+          name: 'Casey',
+          email: 'doesnt@listen.com',
+          password: 'password'
+        });
 
       expect(response.status).toBe(200);
+      expect(response2.status).toBe(200);
 
       user = response.body;
-
+      user2 = response2.body;
 
     });
-
-    // append the token to your requests:
-    //  .set('Authorization', user.token);
 
     it('POST favorite to /api/favorites', async () => {
       const favorite = {
@@ -43,7 +50,7 @@ describe('API Routes', () => {
         gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
         giphyId: 'EKoMfzEg4gnMFdFuBz',
         url: 'https://gph.is/g/Z7Gx2gR'
-      }
+      };
 
       const response = await request
         .post('/api/favorites')
@@ -56,9 +63,32 @@ describe('API Routes', () => {
         userId: user.id,
         ...favorite
       });
+    });
 
-      // Update local client favorite object
-      //favorite = response.body;
+    it('GET my favorites from /api/me/favorite', async () => {
+      // post a favorite from user2
+      const favorite = {
+        preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
+        gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
+        giphyId: 'EKoMfzEg4gnMFdFuBz',
+        url: 'https://gph.is/g/Z7Gx2gR'
+      };
+
+      const otherFav = await request
+        .post('/api/favorites')
+        .set('Authorization', user2.token)
+        .send(favorite);
+      
+      expect(otherFav.status).toBe(200);
+
+      // get all of user1's favorites and make sure the user2's post isn't there
+      const response = await request
+        .get('/api/me/favorites')
+        .set('Authorization', user.token);
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(expect.not.arrayContaining([otherFav.body]));
+
     });
 
   });
