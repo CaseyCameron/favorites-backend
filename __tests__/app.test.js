@@ -91,6 +91,24 @@ describe('API Routes', () => {
 
     });
 
+    it('DELETE favorite to /api/favorites/:id', async () => {
+      const favorite = {
+        preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
+        gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
+        giphyId: 'EKoMfzEg4gnMFdFuBz',
+        url: 'https://gph.is/g/Z7Gx2gR',
+        userId: user.id
+      };
+      const response = await request
+        .delete(`/api/favorites/${favorite.id}`)
+        .set('Authorization', user.token)
+        .send(favorite);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ ...favorite, userId : expect.any(Number), id : expect.any(Number) });
+      
+    });
+
   });
 
 });
@@ -98,6 +116,7 @@ describe('API Routes', () => {
 describe('Data munging', () => {
 
   it('munges our giphy data', async () => {
+    
     const expected = {
       'gif': 'https://media4.giphy.com/media/3o7bu2s4p3ydnZ1WVy/giphy.gif?cid=290d7897flmb00fo5e6dyxapbzbe6m7t292ylgf60bf44c18&rid=giphy.gif&ct=g',
       'giphyId': '3o7bu2s4p3ydnZ1WVy',
