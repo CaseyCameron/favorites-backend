@@ -32,7 +32,7 @@ describe('API Routes', () => {
         .post('/api/auth/signup')
         .send({
           name: 'Casey',
-          email: 'doesnt@listen.com',
+          email: 'ham@sandwich.com',
           password: 'password'
         });
 
@@ -44,13 +44,16 @@ describe('API Routes', () => {
 
     });
 
+    let favorite = {
+      id: expect.any(Number),
+      preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
+      gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
+      giphyId: 'EKoMfzEg4gnMFdFuBz',
+      url: 'https://gph.is/g/Z7Gx2gR'
+    };
+
     it('POST favorite to /api/favorites', async () => {
-      const favorite = {
-        preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
-        gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
-        giphyId: 'EKoMfzEg4gnMFdFuBz',
-        url: 'https://gph.is/g/Z7Gx2gR'
-      };
+     
 
       const response = await request
         .post('/api/favorites')
@@ -59,10 +62,11 @@ describe('API Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
-        id: expect.any(Number),
         userId: user.id,
         ...favorite
       });
+
+      favorite = response.body;
     });
 
     it('GET my favorites from /api/me/favorite', async () => {
@@ -92,26 +96,23 @@ describe('API Routes', () => {
     });
 
     it('DELETE favorite to /api/favorites/:id', async () => {
-      const favorite = {
-        preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
-        gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
-        giphyId: 'EKoMfzEg4gnMFdFuBz',
-        url: 'https://gph.is/g/Z7Gx2gR',
-        userId: user.id
-      };
+      
+
       const response = await request
         .delete(`/api/favorites/${favorite.id}`)
         .set('Authorization', user.token)
         .send(favorite);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ ...favorite, userId : expect.any(Number), id : expect.any(Number) });
-      
-    });
 
+      expect(response.body).toEqual(favorite);
+    });
+      
   });
 
 });
+
+
 
 describe('Data munging', () => {
 
