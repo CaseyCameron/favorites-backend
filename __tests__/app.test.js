@@ -37,34 +37,45 @@ describe('API Routes', () => {
     // append the token to your requests:
     //  .set('Authorization', user.token);
 
-    it('POST /auth/signup', async () => {
-      const fail = 'booger';
-      console.log(fail);
-    }); 
+    it('POST favorite to /api/favorites', async () => {
+      const favorite = {
+        preview: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy-preview.mp4?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy-preview.mp4&ct=g',
+        gif: 'https://media3.giphy.com/media/EKoMfzEg4gnMFdFuBz/giphy.gif?cid=290d7897jbio7vzt04nv0np6y624s2mf95qg1id55qaoqin1&rid=giphy.gif&ct=g',
+        giphyId: 'EKoMfzEg4gnMFdFuBz',
+        url: 'https://gph.is/g/Z7Gx2gR'
+      }
+
+      const response = await request
+        .post('/api/favorites')
+        .set('Authorization', user.token)
+        .send(favorite);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        id: expect.any(Number),
+        userId: user.id,
+        ...favorite
+      });
+
+      // Update local client favorite object
+      //favorite = response.body;
+    });
 
   });
 
-
-  
 });
 
 describe('Data munging', () => {
 
   it('munges our giphy data', async () => {
-
-    // remove this line, here to not have lint error:
     const expected = {
       'gif': 'https://media4.giphy.com/media/3o7bu2s4p3ydnZ1WVy/giphy.gif?cid=290d7897flmb00fo5e6dyxapbzbe6m7t292ylgf60bf44c18&rid=giphy.gif&ct=g',
-      'giphy_id': '3o7bu2s4p3ydnZ1WVy',
+      'giphyId': '3o7bu2s4p3ydnZ1WVy',
       'preview': 'https://media4.giphy.com/media/3o7bu2s4p3ydnZ1WVy/giphy-preview.mp4?cid=290d7897flmb00fo5e6dyxapbzbe6m7t292ylgf60bf44c18&rid=giphy-preview.mp4&ct=g',
       'url': 'http://gph.is/2t6dZH7',
     };
 
     const actual = mungeGiphy(giphyObj);
-
-    // expect(response.status).toBe(200);
-    //expect(response.body).toEqual(exp);
-
     expect(actual).toEqual([expected]);
 
   });
